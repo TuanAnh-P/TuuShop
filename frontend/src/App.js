@@ -1,8 +1,18 @@
-import React from 'react'
+import { Container } from 'react-bootstrap'
+import Header from './components/Header'
+import Footer from './components/Footer'
 
 const App = () => {
   return (
-    <h1>TuuShop</h1>
+    <>
+      <Header/>
+      <main>
+        <Container>
+          <h1>Welcome to TuuShop</h1>
+        </Container>
+      </main>
+      <Footer/>
+    </>
   )
 }
 
