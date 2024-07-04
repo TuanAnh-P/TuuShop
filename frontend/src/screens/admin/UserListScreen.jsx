@@ -1,37 +1,41 @@
 import React from 'react';
 import { Table, Button } from 'react-bootstrap';
 import { FaTrash, FaEdit, FaCheck, FaTimes } from 'react-icons/fa';
-import Message from '../../components/Message';
-import Loader from '../../components/Loader';
+import Message from '../../components/Message'; // Assuming Message component is defined in '../../components/Message'
+import Loader from '../../components/Loader'; // Assuming Loader component is defined in '../../components/Loader'
 import {
 	useDeleteUserMutation,
 	useGetUsersQuery,
-} from '../../slices/usersApiSlice';
-import { toast } from 'react-toastify';
+} from '../../slices/usersApiSlice'; // Assuming hooks and mutations are imported from usersApiSlice
+import { toast } from 'react-toastify'; // Assuming react-toastify is imported and used for notifications
 import { Link } from 'react-router-dom';
 
 const UserListScreen = () => {
+	// Fetch users data using useGetUsersQuery hook from usersApiSlice
 	const { data: users, refetch, isLoading, error } = useGetUsersQuery();
 
+	// Define deleteUser mutation and loading state
 	const [deleteUser] = useDeleteUserMutation();
 
+	// Handle deletion of a user
 	const deleteHandler = async (id) => {
 		if (window.confirm('Are you sure')) {
 			try {
-				await deleteUser(id);
-				refetch();
+				await deleteUser(id); // Delete user using deleteUser mutation
+				refetch(); // Refetch users data to update UI
 			} catch (err) {
-				toast.error(err?.data?.message || err.error);
+				toast.error(err?.data?.message || err.error); // Show error toast notification
 			}
 		}
 	};
 
+	// Render the user list screen with conditional loading and error handling
 	return (
 		<>
-			<h1>Users</h1>
-			{isLoading ? (
+			<h1>Users</h1> {/* Page title */}
+			{isLoading ? ( // Show loader while fetching users data
 				<Loader />
-			) : error ? (
+			) : error ? ( // Show error message if there's an error fetching users data
 				<Message variant='danger'>
 					{error?.data?.message || error.error}
 				</Message>
@@ -55,14 +59,14 @@ const UserListScreen = () => {
 									<a href={`mailto:${user.email}`}>{user.email}</a>
 								</td>
 								<td>
-									{user.isAdmin ? (
+									{user.isAdmin ? ( // Display admin status with green check mark or red cross
 										<FaCheck style={{ color: 'green' }} />
 									) : (
 										<FaTimes style={{ color: 'red' }} />
 									)}
 								</td>
 								<td>
-									{!user.isAdmin && (
+									{!user.isAdmin && ( // Display edit and delete buttons for non-admin users
 										<>
 											<Button
 												as={Link}

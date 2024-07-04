@@ -23,20 +23,19 @@ import Meta from '../components/Meta';
 import { addToCart } from '../slices/cartSlice';
 
 const ProductScreen = () => {
-	const { id: productId } = useParams();
+	const { id: productId } = useParams(); // Fetching product ID from URL params
 
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 
-	const [qty, setQty] = useState(1);
-	const [rating, setRating] = useState(0);
-	const [comment, setComment] = useState('');
+	const [qty, setQty] = useState(1); // State for managing quantity to add to cart
+	const [rating, setRating] = useState(0); // State for managing review rating
+	const [comment, setComment] = useState(''); // State for managing review comment
 
-	const addToCartHandler = () => {
-		dispatch(addToCart({ ...product, qty }));
-		navigate('/cart');
-	};
+	// Redux selector for fetching user info
+	const { userInfo } = useSelector((state) => state.auth);
 
+	// Fetching product details, including reviews, using RTK Query
 	const {
 		data: product,
 		isLoading,
@@ -44,11 +43,17 @@ const ProductScreen = () => {
 		error,
 	} = useGetProductDetailsQuery(productId);
 
-	const { userInfo } = useSelector((state) => state.auth);
-
+	// Mutation hook for creating a review
 	const [createReview, { isLoading: loadingProductReview }] =
 		useCreateReviewMutation();
 
+	// Handler for adding product to cart
+	const addToCartHandler = () => {
+		dispatch(addToCart({ ...product, qty }));
+		navigate('/cart');
+	};
+
+	// Handler for submitting a review
 	const submitHandler = async (e) => {
 		e.preventDefault();
 
@@ -70,33 +75,37 @@ const ProductScreen = () => {
 			<Link className='btn btn-light my-3' to='/'>
 				Go Back
 			</Link>
-			{isLoading ? (
+			{isLoading ? ( // Loading state
 				<Loader />
-			) : error ? (
+			) : error ? ( // Error state
 				<Message variant='danger'>
 					{error?.data?.message || error.error}
 				</Message>
 			) : (
 				<>
-					<Meta title={product.name} description={product.description} />
+					<Meta title={product.name} description={product.description} />{' '}
+					{/* Meta component for SEO */}
 					<Row>
 						<Col md={6}>
-							<Image src={product.image} alt={product.name} fluid />
+							<Image src={product.image} alt={product.name} fluid />{' '}
+							{/* Product image */}
 						</Col>
 						<Col md={3}>
 							<ListGroup variant='flush'>
 								<ListGroup.Item>
-									<h3>{product.name}</h3>
+									<h3>{product.name}</h3> {/* Product name */}
 								</ListGroup.Item>
 								<ListGroup.Item>
 									<Rating
 										value={product.rating}
 										text={`${product.numReviews} reviews`}
-									/>
+									/>{' '}
+									{/* Product rating */}
 								</ListGroup.Item>
-								<ListGroup.Item>Price: ${product.price}</ListGroup.Item>
+								<ListGroup.Item>Price: ${product.price}</ListGroup.Item>{' '}
+								{/* Product price */}
 								<ListGroup.Item>
-									Description: {product.description}
+									Description: {product.description} {/* Product description */}
 								</ListGroup.Item>
 							</ListGroup>
 						</Col>
@@ -107,7 +116,7 @@ const ProductScreen = () => {
 										<Row>
 											<Col>Price:</Col>
 											<Col>
-												<strong>${product.price}</strong>
+												<strong>${product.price}</strong> {/* Product price */}
 											</Col>
 										</Row>
 									</ListGroup.Item>
@@ -115,12 +124,13 @@ const ProductScreen = () => {
 										<Row>
 											<Col>Status:</Col>
 											<Col>
-												{product.countInStock > 0 ? 'In Stock' : 'Out Of Stock'}
+												{product.countInStock > 0 ? 'In Stock' : 'Out Of Stock'}{' '}
+												{/* Product availability */}
 											</Col>
 										</Row>
 									</ListGroup.Item>
 
-									{/* Qty Select */}
+									{/* Quantity selection */}
 									{product.countInStock > 0 && (
 										<ListGroup.Item>
 											<Row>
@@ -144,6 +154,7 @@ const ProductScreen = () => {
 										</ListGroup.Item>
 									)}
 
+									{/* Add to cart button */}
 									<ListGroup.Item>
 										<Button
 											className='btn-block'
@@ -158,24 +169,28 @@ const ProductScreen = () => {
 							</Card>
 						</Col>
 					</Row>
+					{/* Review section */}
 					<Row className='review'>
 						<Col md={6}>
 							<h2>Reviews</h2>
-							{product.reviews.length === 0 && <Message>No Reviews</Message>}
+							{product.reviews.length === 0 && (
+								<Message>No Reviews</Message>
+							)}{' '}
+							{/* Display message if no reviews */}
 							<ListGroup variant='flush'>
 								{product.reviews.map((review) => (
 									<ListGroup.Item key={review._id}>
-										<strong>{review.name}</strong>
-										<Rating value={review.rating} />
-										<p>{review.createdAt.substring(0, 10)}</p>
-										<p>{review.comment}</p>
+										<strong>{review.name}</strong> {/* Reviewer name */}
+										<Rating value={review.rating} /> {/* Review rating */}
+										<p>{review.createdAt.substring(0, 10)}</p>{' '}
+										{/* Review creation date */}
+										<p>{review.comment}</p> {/* Review comment */}
 									</ListGroup.Item>
 								))}
 								<ListGroup.Item>
 									<h2>Write a Customer Review</h2>
-
-									{loadingProductReview && <Loader />}
-
+									{loadingProductReview && <Loader />}{' '}
+									{/* Display loader while submitting review */}
 									{userInfo ? (
 										<Form onSubmit={submitHandler}>
 											<Form.Group className='my-2' controlId='rating'>

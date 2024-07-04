@@ -7,29 +7,33 @@ import CheckoutSteps from '../components/CheckoutSteps';
 import { savePaymentMethod } from '../slices/cartSlice';
 
 const PaymentScreen = () => {
+	// State for managing payment method
 	const [paymentMethod, setPaymentMethod] = useState('PayPal');
 
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 
+	// Selecting shipping address from Redux store
 	const cart = useSelector((state) => state.cart);
 	const { shippingAddress } = cart;
 
+	// Redirect to shipping screen if shipping address is not available
 	useEffect(() => {
 		if (!shippingAddress) {
 			navigate('/shipping');
 		}
 	}, [shippingAddress, navigate]);
 
+	// Handle form submission
 	const submitHandler = (e) => {
 		e.preventDefault();
-		dispatch(savePaymentMethod(paymentMethod));
-		navigate('/placeorder');
+		dispatch(savePaymentMethod(paymentMethod)); // Dispatch action to save payment method
+		navigate('/placeorder'); // Navigate to place order screen
 	};
 
 	return (
 		<FormContainer>
-			<CheckoutSteps step1 step2 step3 />
+			<CheckoutSteps step1 step2 step3 /> {/* Checkout steps component */}
 			<h1>Payment Method</h1>
 			<Form onSubmit={submitHandler}>
 				<Form.Group>
@@ -43,7 +47,7 @@ const PaymentScreen = () => {
 							name='paymentMethod'
 							value='PayPal'
 							checked
-							onChange={(e) => setPaymentMethod(e.target.value)}
+							onChange={(e) => setPaymentMethod(e.target.value)} // Update payment method state
 						></Form.Check>
 					</Col>
 				</Form.Group>

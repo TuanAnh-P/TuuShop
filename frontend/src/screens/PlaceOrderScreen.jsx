@@ -10,12 +10,16 @@ import { useCreateOrderMutation } from '../slices/ordersApiSlice';
 import { clearCartItems } from '../slices/cartSlice';
 
 const PlaceOrderScreen = () => {
+	// Navigation hook
 	const navigate = useNavigate();
 
+	// Selecting cart state from Redux store
 	const cart = useSelector((state) => state.cart);
 
+	// Mutation hook for creating an order
 	const [createOrder, { isLoading, error }] = useCreateOrderMutation();
 
+	// Effect to check if shipping address and payment method are set; redirect if not
 	useEffect(() => {
 		if (!cart.shippingAddress.address) {
 			navigate('/shipping');
@@ -24,7 +28,10 @@ const PlaceOrderScreen = () => {
 		}
 	}, [cart.paymentMethod, cart.shippingAddress.address, navigate]);
 
+	// Redux dispatch hook
 	const dispatch = useDispatch();
+
+	// Handler for placing an order
 	const placeOrderHandler = async () => {
 		try {
 			const res = await createOrder({
@@ -36,35 +43,38 @@ const PlaceOrderScreen = () => {
 				taxPrice: cart.taxPrice,
 				totalPrice: cart.totalPrice,
 			}).unwrap();
-			dispatch(clearCartItems());
-			navigate(`/order/${res._id}`);
+			dispatch(clearCartItems()); // Clear cart items after placing order
+			navigate(`/order/${res._id}`); // Navigate to order confirmation page
 		} catch (err) {
-			toast.error(err);
+			toast.error(err); // Display error toast if order placement fails
 		}
 	};
 
 	return (
 		<>
-			<CheckoutSteps step1 step2 step3 step4 />
+			<CheckoutSteps step1 step2 step3 step4 /> {/* Checkout steps component */}
 			<Row>
+				{/* Left column with shipping, payment method, and order items */}
 				<Col md={8}>
 					<ListGroup variant='flush'>
+						{/* Shipping address */}
 						<ListGroup.Item>
 							<h2>Shipping</h2>
 							<p>
-								<strong>Address:</strong>
-								{cart.shippingAddress.address}, {cart.shippingAddress.city}{' '}
-								{cart.shippingAddress.postalCode},{' '}
+								<strong>Address:</strong> {cart.shippingAddress.address},{' '}
+								{cart.shippingAddress.city} {cart.shippingAddress.postalCode},{' '}
 								{cart.shippingAddress.country}
 							</p>
 						</ListGroup.Item>
 
+						{/* Payment method */}
 						<ListGroup.Item>
 							<h2>Payment Method</h2>
 							<strong>Method: </strong>
 							{cart.paymentMethod}
 						</ListGroup.Item>
 
+						{/* Order items */}
 						<ListGroup.Item>
 							<h2>Order Items</h2>
 							{cart.cartItems.length === 0 ? (
@@ -99,41 +109,49 @@ const PlaceOrderScreen = () => {
 						</ListGroup.Item>
 					</ListGroup>
 				</Col>
+
+				{/* Right column with order summary */}
 				<Col md={4}>
 					<Card>
 						<ListGroup variant='flush'>
 							<ListGroup.Item>
 								<h2>Order Summary</h2>
 							</ListGroup.Item>
+							{/* Items price */}
 							<ListGroup.Item>
 								<Row>
 									<Col>Items</Col>
 									<Col>${cart.itemsPrice}</Col>
 								</Row>
 							</ListGroup.Item>
+							{/* Shipping price */}
 							<ListGroup.Item>
 								<Row>
 									<Col>Shipping</Col>
 									<Col>${cart.shippingPrice}</Col>
 								</Row>
 							</ListGroup.Item>
+							{/* Tax price */}
 							<ListGroup.Item>
 								<Row>
 									<Col>Tax</Col>
 									<Col>${cart.taxPrice}</Col>
 								</Row>
 							</ListGroup.Item>
+							{/* Total price */}
 							<ListGroup.Item>
 								<Row>
 									<Col>Total</Col>
 									<Col>${cart.totalPrice}</Col>
 								</Row>
 							</ListGroup.Item>
+							{/* Display error message if any */}
 							<ListGroup.Item>
 								{error && (
 									<Message variant='danger'>{error.data.message}</Message>
 								)}
 							</ListGroup.Item>
+							{/* Place order button */}
 							<ListGroup.Item>
 								<Button
 									type='button'
@@ -143,7 +161,8 @@ const PlaceOrderScreen = () => {
 								>
 									Place Order
 								</Button>
-								{isLoading && <Loader />}
+								{isLoading && <Loader />}{' '}
+								{/* Display loader if placing order */}
 							</ListGroup.Item>
 						</ListGroup>
 					</Card>

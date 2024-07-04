@@ -1,21 +1,21 @@
-// @ts-check
-import { isValidObjectId } from 'mongoose';
+// @ts-check // Enables TypeScript checking for this file
+import { isValidObjectId } from 'mongoose'; // Importing isValidObjectId function from mongoose
 
 /**
- * Checks if the req.params.id is a valid Mongoose ObjectId.
+ * Middleware function to check if req.params.id is a valid Mongoose ObjectId.
  *
  * @param {import('express').Request} req - The Express request object.
  * @param {import('express').Response} res - The Express response object.
  * @param {import('express').NextFunction} next - The Express next middleware function.
  * @throws {Error} Throws an error if the ObjectId is invalid.
  */
-
 function checkObjectId(req, res, next) {
+	// Check if req.params.id is a valid ObjectId
 	if (!isValidObjectId(req.params.id)) {
 		res.status(404);
-		throw new Error(`Invalid ObjectId of:  ${req.params.id}`);
+		throw new Error(`Invalid ObjectId: ${req.params.id}`);
 	}
-	next();
+	next(); // Move to the next middleware
 }
 
 export default checkObjectId;

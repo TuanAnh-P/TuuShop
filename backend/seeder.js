@@ -1,57 +1,66 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import colors from 'colors';
-import users from './data/users.js';
-import products from './data/products.js';
-import User from './models/userModel.js';
-import Product from './models/productModel.js';
-import Order from './models/orderModel.js';
-import connectDB from './config/db.js';
+import users from './data/users.js'; // Sample user data
+import products from './data/products.js'; // Sample product data
+import User from './models/userModel.js'; // User model
+import Product from './models/productModel.js'; // Product model
+import Order from './models/orderModel.js'; // Order model
+import connectDB from './config/db.js'; // Database connection function
 
-dotenv.config();
+dotenv.config(); // Load environment variables from .env file
 
-connectDB();
+connectDB(); // Connect to MongoDB database
 
+// Function to import sample data into database
 const importData = async () => {
-  try {
-    await Order.deleteMany({}, { maxTimeMS: 30000 }); // Increase timeout to 30 seconds
-    await Product.deleteMany();
-    await User.deleteMany();
+	try {
+		// Clear existing data
+		await Order.deleteMany({}, { maxTimeMS: 30000 }); // Increase timeout to 30 seconds
+		await Product.deleteMany();
+		await User.deleteMany();
 
-    const createdUsers = await User.insertMany(users);
+		// Insert sample users into database and get created users
+		const createdUsers = await User.insertMany(users);
 
-    const adminUser = createdUsers[0]._id;
+		// Get admin user ID from created users
+		const adminUser = createdUsers[0]._id;
 
-    const sampleProducts = products.map((product) => {
-      return { ...product, user: adminUser };
-    });
+		// Map sample products to include admin user ID
+		const sampleProducts = products.map((product) => {
+			return { ...product, user: adminUser };
+		});
 
-    await Product.insertMany(sampleProducts);
+		// Insert sample products into database
+		await Product.insertMany(sampleProducts);
 
-    console.log('Data Imported!'.green.inverse);
-    process.exit();
-  } catch (error) {
-    console.error(`${error}`.red.inverse);
-    process.exit(1);
-  }
+		console.log('Data Imported!'.green.inverse); // Log success message
+		process.exit(); // Exit process
+	} catch (error) {
+		console.error(`${error}`.red.inverse); // Log error message
+		process.exit(1); // Exit process with error
+	}
 };
 
+// Function to destroy all data in database
 const destroyData = async () => {
-  try {
-    await Order.deleteMany({}, { maxTimeMS: 30000 }); // Increase timeout to 30 seconds
-    await Product.deleteMany();
-    await User.deleteMany();
+	try {
+		// Clear all data in collections
+		await Order.deleteMany({}, { maxTimeMS: 30000 }); // Increase timeout to 30 seconds
+		await Product.deleteMany();
+		await User.deleteMany();
 
-    console.log('Data Destroyed!'.red.inverse);
-    process.exit();
-  } catch (error) {
-    console.error(`${error}`.red.inverse);
-    process.exit(1);
-  }
+		console.log('Data Destroyed!'.red.inverse); // Log success message
+		process.exit(); // Exit process
+	} catch (error) {
+		console.error(`${error}`.red.inverse); // Log error message
+		process.exit(1); // Exit process with error
+	}
 };
 
+// Check command line argument to determine whether to import or destroy data
 if (process.argv[2] === '-d') {
-  destroyData();
+	destroyData(); // Destroy data if argument is '-d'
 } else {
-  importData();
+	importData(); // Otherwise, import data
 }

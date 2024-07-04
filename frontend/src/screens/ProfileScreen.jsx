@@ -11,24 +11,31 @@ import { setCredentials } from '../slices/authSlice';
 import { Link } from 'react-router-dom';
 
 const ProfileScreen = () => {
+	// State variables for managing user profile information
 	const [name, setName] = useState('');
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [confirmPassword, setConfirmPassword] = useState('');
 
+	// Fetching user info from Redux store
 	const { userInfo } = useSelector((state) => state.auth);
 
+	// Fetching user's orders using RTK Query
 	const { data: orders, isLoading, error } = useGetMyOrdersQuery();
 
+	// Mutation hook for updating user profile
 	const [updateProfile, { isLoading: loadingUpdateProfile }] =
 		useProfileMutation();
 
+	// Populate name and email fields with user info on component load
 	useEffect(() => {
 		setName(userInfo.name);
 		setEmail(userInfo.email);
 	}, [userInfo.email, userInfo.name]);
 
 	const dispatch = useDispatch();
+
+	// Form submit handler for updating user profile
 	const submitHandler = async (e) => {
 		e.preventDefault();
 		if (password !== confirmPassword) {
@@ -36,17 +43,15 @@ const ProfileScreen = () => {
 		} else {
 			try {
 				const res = await updateProfile({
-					// NOTE: here we don't need the _id in the request payload as this is
-					// not used in our controller.
-					// _id: userInfo._id,
+					// Sending updated profile information
 					name,
 					email,
 					password,
 				}).unwrap();
-				dispatch(setCredentials({ ...res }));
+				dispatch(setCredentials({ ...res })); // Updating Redux store with new credentials
 				toast.success('Profile updated successfully');
 			} catch (err) {
-				toast.error(err?.data?.message || err.error);
+				toast.error(err?.data?.message || err.error); // Handling error messages
 			}
 		}
 	};
@@ -66,7 +71,6 @@ const ProfileScreen = () => {
 							onChange={(e) => setName(e.target.value)}
 						></Form.Control>
 					</Form.Group>
-
 					<Form.Group className='my-2' controlId='email'>
 						<Form.Label>Email Address</Form.Label>
 						<Form.Control
@@ -76,7 +80,6 @@ const ProfileScreen = () => {
 							onChange={(e) => setEmail(e.target.value)}
 						></Form.Control>
 					</Form.Group>
-
 					<Form.Group className='my-2' controlId='password'>
 						<Form.Label>Password</Form.Label>
 						<Form.Control
@@ -86,7 +89,6 @@ const ProfileScreen = () => {
 							onChange={(e) => setPassword(e.target.value)}
 						></Form.Control>
 					</Form.Group>
-
 					<Form.Group className='my-2' controlId='confirmPassword'>
 						<Form.Label>Confirm Password</Form.Label>
 						<Form.Control
@@ -96,18 +98,20 @@ const ProfileScreen = () => {
 							onChange={(e) => setConfirmPassword(e.target.value)}
 						></Form.Control>
 					</Form.Group>
-
 					<Button type='submit' variant='primary'>
 						Update
 					</Button>
-					{loadingUpdateProfile && <Loader />}
+					{loadingUpdateProfile && <Loader />}{' '}
+					{/* Display loader while updating profile */}
 				</Form>
 			</Col>
+
+			{/* My Orders section */}
 			<Col md={9}>
 				<h2>My Orders</h2>
-				{isLoading ? (
+				{isLoading ? ( // Loading state
 					<Loader />
-				) : error ? (
+				) : error ? ( // Error state
 					<Message variant='danger'>
 						{error?.data?.message || error.error}
 					</Message>

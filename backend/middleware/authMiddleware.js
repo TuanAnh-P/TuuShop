@@ -1,8 +1,8 @@
-import jwt from 'jsonwebtoken';
-import asyncHandler from './asyncHandler.js';
-import User from '../models/userModel.js';
+import jwt from 'jsonwebtoken'; // Importing JWT for token verification
+import asyncHandler from './asyncHandler.js'; // Importing async handler utility
+import User from '../models/userModel.js'; // Importing User model
 
-// User must be authenticated
+// Middleware: Protect routes requiring authentication
 const protect = asyncHandler(async (req, res, next) => {
 	let token;
 
@@ -11,29 +11,31 @@ const protect = asyncHandler(async (req, res, next) => {
 
 	if (token) {
 		try {
+			// Verify JWT token using the secret key
 			const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
+			// Fetch user details excluding the password
 			req.user = await User.findById(decoded.userId).select('-password');
 
-			next();
+			next(); // Move to the next middleware
 		} catch (error) {
 			console.error(error);
 			res.status(401);
-			throw new Error('Not authorized, token failed');
+			throw new Error('Not authorized, token failed'); // Token verification failed
 		}
 	} else {
 		res.status(401);
-		throw new Error('Not authorized, no token');
+		throw new Error('Not authorized, no token'); // No token found in the request
 	}
 });
 
-// User must be an admin
+// Middleware: Restrict route access to admins only
 const admin = (req, res, next) => {
 	if (req.user && req.user.isAdmin) {
-		next();
+		next(); // Allow access if user is an admin
 	} else {
 		res.status(401);
-		throw new Error('Not authorized as an admin');
+		throw new Error('Not authorized as an admin'); // User is not an admin
 	}
 };
 
