@@ -5,7 +5,7 @@ import { LinkContainer } from 'react-router-bootstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import { useLogoutMutation } from '../slices/usersApiSlice';
 import { logout } from '../slices/authSlice';
-import logo from '../assets/logo.png';
+// import logo from '../assets/logo.jpg';
 
 const Header = () => {
 	const { cartItems } = useSelector((state) => state.cart);
@@ -32,7 +32,7 @@ const Header = () => {
 				<Container>
 					<LinkContainer to='/'>
 						<Navbar.Brand>
-							<img src={logo} alt='TuuShop' />
+							{/* <img src={logo} alt='TuuShop' /> */}
 							TuuShop
 						</Navbar.Brand>
 					</LinkContainer>
