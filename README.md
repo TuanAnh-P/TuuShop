@@ -48,7 +48,7 @@ Users can submit reviews and ratings for products, with checks in place to preve
 
 ## Technology Stack
 
-- Frontend: React
+- Frontend: React, Redux
 - Backend: Node.js, Express
 - Database: MongoDB
 - Payment Integration: PayPal
