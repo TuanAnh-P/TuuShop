@@ -1,54 +1,202 @@
 # TuuShop
 
-TuuShop is an e-commerce website, built from scratch using the MERN stack (MongoDB, Express, React, Node.js).
+A full-stack e-commerce application built with the MERN stack, featuring a modern React frontend, robust Node.js backend, and comprehensive admin panel.
 
-## Initial Setup
+## Table of Contents
 
-The project begins by creating a simple JSON file containing a list of products. This file serves as the initial dataset for the application.
+- [Overview](#overview)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Project Structure](#project-structure)
+- [Features](#features)
+- [Technology Stack](#technology-stack)
+- [API Endpoints](#api-endpoints)
+- [Contributing](#contributing)
+- [License](#license)
+- [Author](#author)
 
-## Frontend Development
+## Overview
 
-The next step involves developing the user interface to display the products. The homepage features a carousel showcasing the top-rated products, along with a list of the latest products with pagination. Pagination becomes visible when more than eight products are available.
+TuuShop is a complete e-commerce solution that allows users to browse products, manage their shopping cart, process payments through PayPal, and handle orders. The application includes an admin panel for managing products, orders, and users.
 
-## Product Details
+## Prerequisites
 
-Users can click on a product to view its details. The product details page includes the ID, description, price, and rating. Ratings and reviews are visible, and users must be logged in to submit a review. Each user can submit only one review per product. An "Add to Cart" button updates the cart quantity and total price.
+Before running this application, make sure you have the following installed:
 
-## Shopping Cart
+- Node.js (v14 or higher)
+- MongoDB
+- npm or yarn package manager
 
-The cart page allows users to view items in the cart and adjust item quantities, which updates the total price and quantity. Users can proceed to checkout, requiring them to log in or register.
+## Installation
 
-## Checkout Process
+1. Clone the repository:
 
-During checkout, users:
+   ```bash
+   git clone <repository-url>
+   cd TuuShop
+   ```
 
-- Log in or register.
-- Enter shipping information, which is stored in local storage for convenience.
-- Choose a payment method, with options for PayPal and credit/debit card payments.
-- Place their order, which is saved in the database and marked as "not paid" until payment is processed via the PayPal sandbox.
+2. Install backend dependencies:
 
-## Order Management
+   ```bash
+   npm install
+   ```
 
-Once an order is placed:
+3. Install frontend dependencies:
 
-- Users can view their order history and details from their profile.
-- Admins can manage orders, marking them as delivered once fulfilled.
+   ```bash
+   cd frontend
+   npm install
+   cd ..
+   ```
 
-## Admin Features
+4. Create a `.env` file in the root directory and add the following environment variables:
 
-Admins have additional functionalities, including:
+   ```env
+   MONGO_URI=your_mongodb_connection_string
+   JWT_SECRET=your_jwt_secret
+   PAYPAL_CLIENT_ID=your_paypal_client_id
+   NODE_ENV=development
+   PORT=8000
+   ```
 
-- Viewing and managing all orders.
-- Creating, editing, and deleting products.
-- Uploading product images, which are stored on the server using Multer, with an option to use external services like Cloudinary or Amazon S3.
+5. Seed the database with sample data (optional):
+   ```bash
+   npm run data:import
+   ```
 
-## Reviews and Ratings
+## Usage
 
-Users can submit reviews and ratings for products, with checks in place to prevent multiple reviews for the same product.
+### Development Mode
+
+To run both frontend and backend concurrently:
+
+```bash
+npm run dev
+```
+
+### Running Separately
+
+Backend server:
+
+```bash
+npm run server
+```
+
+Frontend development server:
+
+```bash
+npm run client
+```
+
+### Production Mode
+
+```bash
+npm start
+```
+
+The application will be available at `http://localhost:3000` (frontend) and `http://localhost:8000` (backend).
+
+## Project Structure
+
+```
+TuuShop/
+├── backend/
+│   ├── config/          # Database configuration
+│   ├── controllers/     # Route controllers
+│   ├── data/           # Sample data
+│   ├── middleware/     # Custom middleware
+│   ├── models/         # Mongoose models
+│   ├── routes/         # API routes
+│   ├── utils/          # Utility functions
+│   └── server.js       # Express server setup
+├── frontend/
+│   ├── public/         # Static assets
+│   └── src/
+│       ├── components/ # Reusable React components
+│       ├── screens/    # Page components
+│       ├── slices/     # Redux slices
+│       └── utils/      # Frontend utilities
+└── package.json        # Root package configuration
+```
+
+## Features
+
+### User Features
+
+- Product browsing with search and filtering
+- Product details with ratings and reviews
+- Shopping cart management
+- User authentication and registration
+- Order placement and tracking
+- PayPal payment integration
+- User profile management
+- Order history
+
+### Admin Features
+
+- Product management (create, read, update, delete)
+- Order management and status updates
+- User management
+- Image upload for products
+- Sales analytics
+
+### Technical Features
+
+- Responsive design with Bootstrap
+- Redux state management
+- JWT authentication
+- MongoDB database with Mongoose ODM
+- Image upload with Multer
+- Pagination for products and orders
+- Error handling middleware
+- API validation
 
 ## Technology Stack
 
-- Frontend: React, Redux
-- Backend: Node.js, Express
-- Database: MongoDB
-- Payment Integration: PayPal
+### Frontend
+
+- **React** - JavaScript library for building user interfaces
+- **Redux Toolkit** - State management
+- **React Router** - Client-side routing
+- **React Bootstrap** - UI components
+- **Axios** - HTTP client
+
+### Backend
+
+- **Node.js** - JavaScript runtime
+- **Express.js** - Web framework
+- **MongoDB** - NoSQL database
+- **Mongoose** - MongoDB object modeling
+- **JWT** - Authentication
+- **bcryptjs** - Password hashing
+- **Multer** - File upload handling
+
+### Payment Integration
+
+- **PayPal API** - Payment processing
+
+## API Endpoints
+
+### Products
+
+- `GET /api/products` - Get all products
+- `GET /api/products/:id` - Get single product
+- `POST /api/products` - Create product (Admin)
+- `PUT /api/products/:id` - Update product (Admin)
+- `DELETE /api/products/:id` - Delete product (Admin)
+
+### Users
+
+- `POST /api/users/register` - Register user
+- `POST /api/users/login` - Login user
+- `GET /api/users/profile` - Get user profile
+- `PUT /api/users/profile` - Update user profile
+
+### Orders
+
+- `POST /api/orders` - Create order
+- `GET /api/orders/:id` - Get order by ID
+- `GET /api/orders/myorders` - Get user orders
+- `PUT /api/orders/:id/pay` - Update order to paid
